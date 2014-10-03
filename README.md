@@ -38,14 +38,14 @@ class ExampleController extends Controller{
   function index(){
     if($_FILES){
     	$config = array(
-            "UploadPath" => 'kaan/',
-            "MaximumSize" => "10M",
+            "UploadPath" => 'Upload_Path/',
+            "MaximumSize" => "10M", // 10M, 10K, 10B, 10G
     		"Overwrite" => false,
-            "SupportedFormats" => array("png"),
+            "SupportedFormats" => array("png"), // jpg,png,gif,svg ...
     		"Resolution" => array("MaxWidth"=>false,"MaxHeight"=>false),
-    		"FileName" => "KaanImage",	
+    		"FileName" => "Picture",	
     	);
-    	$test = new FileUpload($config);
+    	$test = new SwiftUploader($config);
     		print_r($test->UploadFile($_FILES["asd"]));
     		print_r($test->ValidationErrors());
     	}
@@ -60,15 +60,15 @@ For Flat PHP you can use the following segment of code;
   require_once('FileUpload.php');
     if($_FILES){
     	$config = array(
-            "UploadPath" => 'kaan/',
-            "MaximumSize" => "10M",
-    		"Overwrite" => false,
-            "SupportedFormats" => array("png"),
+            "UploadPath" => 'Upload_Path/',
+            "MaximumSize" => "10M", // 10M, 10K, 10B, 10G
+    		    "Overwrite" => false,
+            "SupportedFormats" => array("png"), // jpg,png,gif,svg ...
     		"Resolution" => array("MaxWidth"=>false,"MaxHeight"=>false),
-    		"FileName" => "KaanImage",	
+    		"FileName" => "Picture",	
     	);
-    	$test = new FileUpload($config);
-    		print_r($test->UploadFile($_FILES["asd"]));
+    	$test = new SwiftUploader($config);
+    		print_r($test->UploadFile($_FILES["Post_Name"]));
     		print_r($test->ValidationErrors());
     	}
     }
