@@ -72,6 +72,12 @@ For Flat PHP you can use the following segment of code;
     }
 ?>
 ```
+
+Output:
+```sh
+  Array ( [Title] => File [Extension] => txt [Size] => 0 [Path] => kaan/ [FullFile] => kaan/File.txt )
+```
+
 License
 ----
 
