@@ -46,7 +46,7 @@ class ExampleController extends Controller{
     		"FileName" => "Picture",	
     	);
     	$test = new SwiftUploader($config);
-    		print_r($test->UploadFile($_FILES["asd"]));
+    		print_r($test->UploadFile($_FILES["Post_Name"]));
     		print_r($test->ValidationErrors());
     	}
     }
