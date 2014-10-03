@@ -25,7 +25,7 @@ Installation
 
 ```sh
 cd /cakephp_path/app/Lib/
-git clone git@github.com.user/my-project.git .
+git clone https://github.com/bl4cksta/SwiftUploader.git .
 ```
 
 When you installed library to hosted path.You should import on it.
