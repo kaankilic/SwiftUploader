@@ -28,7 +28,52 @@ cd /cakephp_path/app/Lib/
 git clone git@github.com.user/my-project.git .
 ```
 
+When you installed library to hosted path.You should import on it.
 
+For CakePHP you can use the following segment of code before initialize controller;
+```sh
+AppUse('SwiftUploader','Lib');
+
+class ExampleController extends Controller{
+  function index(){
+    if($_FILES){
+    	$config = array(
+            "UploadPath" => 'kaan/',
+            "MaximumSize" => "10M",
+    		"Overwrite" => false,
+            "SupportedFormats" => array("png"),
+    		"Resolution" => array("MaxWidth"=>false,"MaxHeight"=>false),
+    		"FileName" => "KaanImage",	
+    	);
+    	$test = new FileUpload($config);
+    		print_r($test->UploadFile($_FILES["asd"]));
+    		print_r($test->ValidationErrors());
+    	}
+    }
+  }
+
+```
+
+For Flat PHP you can use the following segment of code;
+```sh
+<?php 
+  require_once('FileUpload.php');
+    if($_FILES){
+    	$config = array(
+            "UploadPath" => 'kaan/',
+            "MaximumSize" => "10M",
+    		"Overwrite" => false,
+            "SupportedFormats" => array("png"),
+    		"Resolution" => array("MaxWidth"=>false,"MaxHeight"=>false),
+    		"FileName" => "KaanImage",	
+    	);
+    	$test = new FileUpload($config);
+    		print_r($test->UploadFile($_FILES["asd"]));
+    		print_r($test->ValidationErrors());
+    	}
+    }
+?>
+```
 License
 ----
 
