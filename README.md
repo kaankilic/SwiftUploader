@@ -32,7 +32,7 @@ When you installed library to hosted path.You should import on it.
 
 For CakePHP you can use the following segment of code before initialize controller;
 ```sh
-AppUse('SwiftUploader','Lib');
+App::Uses('SwiftUploader','Lib');
 
 class ExampleController extends Controller{
   function index(){
