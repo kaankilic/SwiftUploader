@@ -48,7 +48,6 @@ class ExampleController extends Controller{
     	$test = new SwiftUploader($config);
     		print_r($test->UploadFile($_FILES["Post_Name"]));
     		print_r($test->ValidationErrors());
-    	}
     }
   }
 
@@ -70,7 +69,6 @@ For Flat PHP you can use the following segment of code;
     	$test = new SwiftUploader($config);
     		print_r($test->UploadFile($_FILES["Post_Name"]));
     		print_r($test->ValidationErrors());
-    	}
     }
 ?>
 ```
