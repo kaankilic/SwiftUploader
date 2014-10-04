@@ -22,10 +22,17 @@ Dillinger uses a number of open source projects to work properly:
 
 Installation
 --------------
+For CakePHP Install;
 
 ```sh
 cd /cakephp_path/app/Lib/
 git clone https://github.com/bl4cksta/SwiftUploader.git .
+```
+
+For Flat PHP Install;
+
+```sh
+git clone https://github.com/bl4cksta/SwiftUploader.git
 ```
 
 When you installed library to hosted path.You should import on it.
