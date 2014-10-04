@@ -5,7 +5,7 @@ class SwiftUploader {
         "UploadPath" => false, //Yükleme path'ini belirtin
         "MaximumSize" => "512K", //Megabytes - MB | For bytes B | For KiloBytes KB | [0-9]+[AZ]*[B] regexi bu
 		"Overwrite" => false, // Üzerine yazma işlemi yapılsınmı yapılmasın mı?
-        "SupportedFormats" => array("png","jpg","gif"),  // Desteklenen formatlar array olarak belirtilmeli
+        "SupportedFormats" => array("png","jpg","sql"),  // Desteklenen formatlar array olarak belirtilmeli
 		"Resolution" => array("MaxWidth"=>false,"MaxHeight"=>false), // Resolution resimler için geçerli bir parametredir.
 		"FileName" => "File", //Dosyanın adını yazar
 		"isMultiple" => false // Çoklu dosya yükleme işlemi aktif mi?
@@ -14,6 +14,7 @@ class SwiftUploader {
 	protected $ValidationErrors = array(); // Validation ile ilgili bir problem olduğunda
 	
     var $FileTypes = array(
+			// Image Files
             'png' => 'image/png',
             'jpg' => 'image/jpeg',
             'gif' => 'image/gif',
@@ -23,9 +24,57 @@ class SwiftUploader {
             'tif' => 'image/tiff',
             'svg' => 'image/svg+xml',
             'svgz' => 'image/svg+xml',
-			'txt' => 'text/plain' 
+			// Text Files
+			'txt' => 'text/plain',
+            'htm' => 'text/html',
+            'html' => 'text/html',
+            'php' => 'text/html',
+            'css' => 'text/css',
+            'js' => 'application/javascript',
+            'json' => 'application/json',
+            'xml' => 'application/xml',
+            'swf' => 'application/x-shockwave-flash',
+            'flv' => 'video/x-flv',
+			// Archives
+            'zip' => 'application/zip',
+            'rar' => 'application/x-rar-compressed',
+            'exe' => 'application/x-msdownload',
+            'msi' => 'application/x-msdownload',
+            'cab' => 'application/vnd.ms-cab-compressed',
+
+            // Audio/Video files
+            'mp3' => 'audio/mpeg',
+            'qt' => 'video/quicktime',
+            'mov' => 'video/quicktime',
+
+            // Adobe Files
+            'pdf' => 'application/pdf',
+            'psd' => 'image/vnd.adobe.photoshop',
+            'ai' => 'application/postscript',
+            'eps' => 'application/postscript',
+            'ps' => 'application/postscript',
+
+            // MS Office Documents
+            'doc' => 'application/msword',
+            'rtf' => 'application/rtf',
+            'xls' => 'application/vnd.ms-excel',
+            'ppt' => 'application/vnd.ms-powerpoint',
+
+            // Open Office Documents
+            'odt' => 'application/vnd.oasis.opendocument.text',
+            'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
     );
-	
+	var $ImageExtensions = array(
+			'png' => 'image/png',
+            'jpg' => 'image/jpeg',
+            'gif' => 'image/gif',
+            'bmp' => 'image/bmp',
+            'ico' => 'image/vnd.microsoft.icon',
+            'tiff' => 'image/tiff',
+            'tif' => 'image/tiff',
+            'svg' => 'image/svg+xml',
+            'svgz' => 'image/svg+xml'
+	);
 	/*
 	* Sınıf initialize edildiğinde default ayarlar arasında eksik veya girilmemiş olan
 	* ayar parametrelerini default değerleriyle birleştirir.
@@ -114,20 +163,21 @@ class SwiftUploader {
      */
 
     public function RenameFile($FileName, $Extension) {
-        if ($this->CheckForDuplicate($FileName, $Extension)) {
-			$HasCopies = strpos($FileName,'_');
-			if($HasCopies !== false){
-				$ChangeCopies = preg_split('/_/s',$FileName);
-				$CopyNumber = intval($ChangeCopies[1]); // _1 _2 _3
-				$CopyNumber++;
-				$FileName = $ChangeCopies[0].'_'.$CopyNumber;
-			}else{
-				$FileName = $FileName.'_1';
+		if($this->Options["Overwrite"]!=true){
+			if ($this->CheckForDuplicate($FileName, $Extension)) {
+				$HasCopies = strpos($FileName,'_');
+				if($HasCopies !== false){
+					$ChangeCopies = preg_split('/_/s',$FileName);
+					$CopyNumber = intval($ChangeCopies[1]); // _1 _2 _3
+					$CopyNumber++;
+					$FileName = $ChangeCopies[0].'_'.$CopyNumber;
+				}else{
+					$FileName = $FileName.'_1';
+				}
+				return $this->RenameFile($FileName, $Extension);
 			}
-            return $this->RenameFile($FileName, $Extension);
-        } else {
-            return $FileName;
-        }
+		}
+		return $FileName;			
     }
 	public function GenerateImage($ResizedImage,$File){
 			if($this->GetShortMime($File)=="jpg" || $this->GetShortMime($File)=="jpeg"){
@@ -241,6 +291,16 @@ class SwiftUploader {
 		}
 		return $isEmpty;
 	}
+	public function isFileImage($Extension=NULL){
+		$isImage = false;
+		foreach($this->ImageExtensions as $Key=>$Format){
+			if($Key == $Extension){
+				$isImage = true;
+				break;
+			}
+		}
+		return $isImage;
+	}
 	/*
 	*	DOsya yükler
 	*/
@@ -250,22 +310,23 @@ class SwiftUploader {
 			$NewTitle = $this->Options["FileName"];
 			$Data = false;
 			$Extension = $this->GetShortMime($File["type"]);
-
 			if($this->isFileEmpty($File["error"])){
 				$this->SetError("Lütfen bir dosya seçiniz");
 				return $Data;
 			}
 			if($Extension==false){
 				$this->SetError("Bu format desteklenmiyor");
-			}else if($this->isSupportedFormat($Extension)==false){
-				$this->SetError("Bu resim formatı desteklenmiyor.");
+				return $Data;
+			}
+			if($this->isSupportedFormat($Extension)==false){
+				$this->SetError("Bu dosya formatı desteklenmiyor.");
 			}
 			if($this->isSupportedFileSize($File["size"])==false){
 				$this->SetError("Dosya boyutu çok büyük");
 			}
 			if(count($this->ValidationErrors)==0){
 				$NewName = $this->RenameFile($NewTitle, $Extension);
-				move_uploaded_file($File["tmp_name"], $Path . $NewName . "." . $Extension);
+				@move_uploaded_file($File["tmp_name"], $Path . $NewName . "." . $Extension);
 				$Data = array(
 					"Title" => $NewName,
 					"Extension" => $Extension,
@@ -274,28 +335,40 @@ class SwiftUploader {
 					"FullFile"=> $this->Options["UploadPath"].$NewName.'.'.$Extension
 				);
 				$FullPath = $this->Options["UploadPath"] . $NewName . "." . $Extension;
-				$this->ResizeImage($FullPath);
-			
 			}
 			return $Data;
 	}
 	public function UploadMultipleFile($Files = array(),$NewTitle){
         $Path = $this->Options["UploadPath"];
 		$Data = array();
-		foreach ($Files as $File) {
-            $NewFileName = preg_split("/\./", $File["name"]);
-            $NewName = $this->RenameFile($NewTitle, strtolower($NewFileName[1]));
-            move_uploaded_file($File["tmp_name"], $Path . $NewName . "." . strtolower($NewFileName[1]));
-            $Data[] = array(
-				"Title" => $NewName,
-                "Extension" => strtolower($NewFileName[1]),
-                "Size" => $File["size"],
-                "Path" => $this->Options["UploadPath"]
-            );
-            $FullPath = $this->Options["UploadPath"] . $NewName . "." . strtolower($NewFileName[1]); 
-            $this->ResizeImage($FullPath);
-            }
-			return $Data;
+		if($this->isFileEmpty($File["error"])){
+				$this->SetError("Lütfen bir dosya seçiniz");
+				return $Data;
+			}
+			if($Extension==false){
+				$this->SetError("Bu format desteklenmiyor");
+				return $Data;
+			}
+			if($this->isSupportedFormat($Extension)==false){
+				$this->SetError("Bu dosya formatı desteklenmiyor.");
+			}
+			if($this->isSupportedFileSize($File["size"])==false){
+				$this->SetError("Dosya boyutu çok büyük");
+			}
+			if(count($this->ValidationErrors)==0){
+				foreach ($Files as $File) {
+					$NewName = $this->RenameFile($NewTitle, $Extension);
+					@move_uploaded_file($File["tmp_name"], $Path . $NewName . "." . $Extension);
+					$Data[] = array(
+						"Title" => $NewName,
+						"Extension" => $Extension,
+						"Size" => $File["size"],
+						"Path" => $this->Options["UploadPath"],
+						"FullFile"=> $this->Options["UploadPath"].$NewName.'.'.$Extension
+					);
+					$FullPath = $this->Options["UploadPath"] . $NewName . "." . $Extension;
+				}
+			}
 	}
     public function UploadFile($Files = array()) {
         $Data = array();
