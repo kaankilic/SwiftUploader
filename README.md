@@ -10,7 +10,7 @@ Don't waste your time with controlling, validating and modifying files that is u
 Version
 ----
 
-1.0
+1.0 BETA
 
 Technologies
 -----------
