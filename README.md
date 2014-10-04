@@ -63,7 +63,7 @@ class ExampleController extends Controller{
 For Flat PHP you can use the following segment of code;
 ```sh
 <?php 
-  require_once('FileUpload.php');
+  require_once('SwiftUploader.php');
     if($_FILES){
     	$config = array(
             "UploadPath" => 'Upload_Path/',
